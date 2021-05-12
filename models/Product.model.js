@@ -35,7 +35,7 @@ const productSchema = new Schema ({
     {
       user: String,
       comment: String,
-      rating: Image,
+      rating: String,
     }
   ]  
 });
