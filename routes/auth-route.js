@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const User = require('../models/User.model');
-const bcrypt = require('bcryptjs');
-const passport = require('passport');
+const express      = require('express');
+const router       = express.Router();
+const User         = require('../models/User.model');
+const bcrypt       = require('bcryptjs');
+const passport     = require('passport');
+let GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 //Login
 router.post('/login', (req, res, next) => {
@@ -79,6 +80,7 @@ router.post('/logout', (req, res) => {
   res.status(200).json('Logout success');
 });
 
+//isLoggedIn
 router.get('/loggedIn', (req, res) => {
   if(req.isAuthenticated()) {
     res.status(200).json(req.user);
@@ -86,5 +88,33 @@ router.get('/loggedIn', (req, res) => {
   }
   res.status(200).json({});
 });
+
+
+//Get google auth
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_ID,
+  clientSecret: process.env.GOOGLE_SECRET,
+  callbackURL: `${process.env.CLIENT_HOSTNAME}/auth/google/callback`
+},
+
+function(accessToken, refreshToken, profile, cb) {
+  User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    return cb(err, user);
+  });
+}
+));
+
+//Google authentication
+router.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile'] }));
+
+
+router.get( "/auth/google/callback",
+  passport.authenticate("google", {
+    successRedirect: `${process.env.CLIENT_HOSTNAME}/`,
+    failureRedirect: `${process.env.CLIENT_HOSTNAME}/login`
+  })
+);
+
 
 module.exports = router;

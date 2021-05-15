@@ -78,5 +78,8 @@ app.use('/api', products);
 const auth = require('./routes/auth-route');
 app.use('/api', auth);
 
+const shop = require('./routes/shopping-cart-route');
+app.use('/api', shop);
+
 
 module.exports = app;

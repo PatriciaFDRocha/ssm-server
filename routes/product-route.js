@@ -1,6 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const Product = require('../models/Product.model');
+const express     = require('express');
+const router      = express.Router();
+const Product     = require('../models/Product.model');
 const fileUpload  = require('../configs/cloudinary');
 
 //Get all products
