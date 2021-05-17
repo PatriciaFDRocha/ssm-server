@@ -72,11 +72,12 @@ app.locals.title = 'SSM - Made With Love';
 const index = require('./routes/index');
 app.use('/', index);
 
+const auth = require('./routes/auth-route');
+app.use('/api', auth);
+
 const products = require('./routes/product-route');
 app.use('/api', products);
 
-const auth = require('./routes/auth-route');
-app.use('/api', auth);
 
 const shop = require('./routes/shopping-cart-route');
 app.use('/api', shop);

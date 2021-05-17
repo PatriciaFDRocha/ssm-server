@@ -1,27 +1,8 @@
 const express      = require('express');
 const router       = express.Router();
+const Product      = require('../models/Product.model');
 const ShoppingCart = require('../models/ShoppingCart.model');
-const fileUpload   = require('../configs/cloudinary');
 
-
-//Add Product to Shopping Cart
-router.post('/shopping-cart', async (req, res) => {
-  const { pictureUrl, name, quantity, price } = req.body;
-
-  try {
-    const response = await ShoppingCart.create({
-      pictureUrl,
-      name,
-      quantity,
-      price
-    });
-
-    res.status(200).json(response);
-    
-  } catch(e) {
-    res.status(500).json(`Error occurred ${e}`);
-  }
-});
 
 //See shopping cart
 router.get('/shopping-cart', async (req, res) => {
@@ -35,14 +16,27 @@ router.get('/shopping-cart', async (req, res) => {
 })
 
 
-//Upload image to cloudinary
-router.post('/upload', fileUpload.single('file'), (req, res) => {
-  try {
-    res.status(200).json({ fileUrl: req.file.path });
+//Add Product to Shopping Cart
+router.post('/shopping-cart', async (req, res) => {
+  const { quantity, productId } = req.body;
+  const user = req.user;
 
+  const product = await Product.findById(productId)
+
+  try {
+    const response = await ShoppingCart.create({
+      user,
+      quantity,
+      product
+    });
+
+    res.status(200).json(response);
+    
   } catch(e) {
     res.status(500).json(`Error occurred ${e}`);
   }
-})
+});
+
+
 
 module.exports = router;

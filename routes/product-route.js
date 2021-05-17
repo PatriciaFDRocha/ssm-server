@@ -14,7 +14,7 @@ router.get('/products', async (req, res) => {
   }
 });
 
-//Create a Product
+//Create a Product -> admin
 router.post('/products', async (req, res) => {
   const { pictureUrl, name, price, description, shopName, brand } = req.body;
   
@@ -41,7 +41,7 @@ router.post('/products', async (req, res) => {
 });
 
 
-//Delete Project
+//Delete Product -> only by admin
 router.delete('/products/:id', async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -63,21 +63,31 @@ router.get('/products/:id', async (req, res) => {
   }
 });
 
-//Update project
-router.put('/products/:id', async (req, res) => {
+//Update product -> only by admin
+router.put('/products/:id/edit', async (req, res) => {
   try {
-    const { pictureUrl, name, price, description, shopName, brand } = req.body;
+    const { name, price, description, shopName, brand, pictureUrl } = req.body;
 
-    await Product.findByIdAndUpdate(req.params.id, {
-      pictureUrl, 
-      name, 
-      price,
-      description,
-      brand,
-      shopName
-    });
+    const user = req.user;
 
-    res.status(200).json(`project with id ${req.params.id} was updated`);
+    const product = await Product.findById(req.params.id).populate('user')
+
+    if(req.user.name !== product.user.name) {
+      res.status(500).json(`not admin of product ${e}`);
+      return;
+    } 
+    else {
+      await Product.findByIdAndUpdate(req.params.id, {
+        name, 
+        price,
+        description,
+        brand,
+        shopName,
+        pictureUrl
+      });
+  
+      res.status(200).json(`project with id ${req.params.id} was updated by ${user}`);
+    }
 
   }catch(e) {
     res.status(500).json(`Error occurred ${e}`);
