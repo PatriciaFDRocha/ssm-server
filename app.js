@@ -78,9 +78,7 @@ app.use('/api', auth);
 const products = require('./routes/product-route');
 app.use('/api', products);
 
-
-const shop = require('./routes/shopping-cart-route');
-app.use('/api', shop);
-
+const favourites = require('./routes/favourite-route');
+app.use('/api', favourites);
 
 module.exports = app;

@@ -17,6 +17,7 @@ router.get('/products', async (req, res) => {
 //Create a Product -> admin
 router.post('/products', async (req, res) => {
   const { pictureUrl, name, price, description, shopName, brand } = req.body;
+
   
   if( !pictureUrl || !name || !price || !description || !shopName ) {
     res.status(400).json('missing fields');
@@ -30,7 +31,8 @@ router.post('/products', async (req, res) => {
       price,
       description,
       brand,
-      shopName
+      shopName,
+      user: req.user._id
     });
     
     res.status(200).json(response);
@@ -42,10 +44,22 @@ router.post('/products', async (req, res) => {
 
 
 //Delete Product -> only by admin
-router.delete('/products/:id', async (req, res) => {
+router.delete('/products/:id/delete', async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.status(200).json(`project with id ${req.params.id} deleted`)
+
+    const product = await Product.findById(req.params.id).populate('user');
+
+    if(req.user.name !== product.user.name) {
+
+      res.status(500).json(`not admin of product ${e}`);
+      return;
+    } 
+
+    else {
+      await Product.findByIdAndRemove(req.params.id);
+  
+      res.status(200).json(`product with id ${req.params.id} was deleted`);
+    }
 
   } catch(e) {
     res.status(500).json(`Error occurred ${e}`);
@@ -55,7 +69,7 @@ router.delete('/products/:id', async (req, res) => {
 //Get by Id
 router.get('/products/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate('user')
     res.status(200).json(product);
 
   } catch(e) {
@@ -103,6 +117,24 @@ router.post('/upload', fileUpload.single('file'), (req, res) => {
   } catch(e) {
     res.status(500).json(`Error occurred ${e}`);
   }
-})
+});
+
+
+//Add a review
+router.post('/reviews/:id/add', async (req, res) => {
+  const productId = req.params.id;
+  const { comment, rating } = req.body;
+  const user = req.user;
+
+  try {
+    let review = await Product.findByIdAndUpdate(productId, {
+      $push: { reviews: { user, comment, rating }}
+    });
+    res.status(200).json(review);
+
+  } catch(e) {
+    res.status(500).json(`Error occurred ${e}`);
+  }
+});
 
 module.exports = router;
