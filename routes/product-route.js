@@ -126,11 +126,16 @@ router.post('/reviews/:id/add', async (req, res) => {
   const { comment, rating } = req.body;
   const user = req.user;
 
+  if(!user || !comment || !rating) {
+    res.status(400).json('missing fields')
+  }
+
   try {
-    let review = await Product.findByIdAndUpdate(productId, {
+    const response = await Product.findByIdAndUpdate(productId, {
       $push: { reviews: { user, comment, rating }}
     });
-    res.status(200).json(review);
+
+    res.status(200).json(response);
 
   } catch(e) {
     res.status(500).json(`Error occurred ${e}`);

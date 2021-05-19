@@ -33,7 +33,10 @@ const productSchema = new Schema ({
 
   reviews: [
     {
-      user: String,
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+      },
       comment: String,
       rating: String,
     }

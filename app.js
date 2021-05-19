@@ -81,4 +81,10 @@ app.use('/api', products);
 const favourites = require('./routes/favourite-route');
 app.use('/api', favourites);
 
+const shops = require('./routes/shop-route');
+app.use('/api', shops);
+
+const shoppingcart = require('./routes/shopping-cart-route');
+app.use('/api', shoppingcart);
+
 module.exports = app;
