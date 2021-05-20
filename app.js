@@ -29,7 +29,6 @@ const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.
 const app = express();
 
 //allows heroku to received connections from other websites
-app.set('trust proxy', 1);
 
 // Middleware Setup
 app.use(logger('dev'));
@@ -38,6 +37,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 
+app.set('trust proxy', 1);
 
 //Session setup
 app.use(session({
