@@ -27,14 +27,12 @@ router.get('/shop/:id', async (req, res) => {
 
 //Create a shop
 router.post('/shop/add', async (req, res) => {
-  const { shopName, description, latitude, longitude } = req.body;
+  const { shopName, description,  } = req.body;
 
   try {
     const response = await Shop.create({
       shopName,
       description,
-      // latitude,
-      // longitude,
       user: req.user._id
     });
     

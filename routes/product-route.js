@@ -3,6 +3,21 @@ const router      = express.Router();
 const Product     = require('../models/Product.model');
 const fileUpload  = require('../configs/cloudinary');
 
+
+
+
+//Get by Id
+router.get('/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate('user')
+    res.status(200).json(product);
+
+  } catch(e) {
+    res.status(500).json(`Error occurred ${e}`);
+  }
+});
+
+
 //Get all products
 router.get('/products', async (req, res) => {
   try {
@@ -43,40 +58,6 @@ router.post('/products', async (req, res) => {
 });
 
 
-//Delete Product -> only by admin
-router.delete('/products/:id/delete', async (req, res) => {
-  try {
-
-    const product = await Product.findById(req.params.id).populate('user');
-
-    if(req.user.name !== product.user.name) {
-
-      res.status(500).json(`not admin of product ${e}`);
-      return;
-    } 
-
-    else {
-      await Product.findByIdAndRemove(req.params.id);
-  
-      res.status(200).json(`product with id ${req.params.id} was deleted`);
-    }
-
-  } catch(e) {
-    res.status(500).json(`Error occurred ${e}`);
-  }
-});
-
-//Get by Id
-router.get('/products/:id', async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id).populate('user')
-    res.status(200).json(product);
-
-  } catch(e) {
-    res.status(500).json(`Error occurred ${e}`);
-  }
-});
-
 //Update product -> only by admin
 router.put('/products/:id/edit', async (req, res) => {
   try {
@@ -108,6 +89,29 @@ router.put('/products/:id/edit', async (req, res) => {
   }
 });
 
+//Delete Product -> only by admin
+router.delete('/products/:id', async (req, res) => {
+  try {
+
+    const product = await Product.findById(req.params.id).populate('user');
+
+    if(req.user.name !== product.user.name) {
+
+      res.status(500).json('error');
+      return;
+    } 
+
+    else {
+      await Product.findByIdAndRemove(req.params.id);
+  
+      res.status(200).json(`product with id ${req.params.id} was deleted`);
+    }
+
+  } catch(e) {
+    res.status(500).json(`Error occurred ${e}`);
+  }
+});
+
 
 //Upload image to cloudinary
 router.post('/upload', fileUpload.single('file'), (req, res) => {
@@ -120,26 +124,32 @@ router.post('/upload', fileUpload.single('file'), (req, res) => {
 });
 
 
+
 //Add a review
 router.post('/reviews/:id/add', async (req, res) => {
-  const productId = req.params.id;
-  const { comment, rating } = req.body;
+  const productId  = req.params.id;
+  const {comment} = req.body;
   const user = req.user;
 
-  if(!user || !comment || !rating) {
+  console.log(productId);
+
+  if(!user || !comment ) {
     res.status(400).json('missing fields')
   }
-
+  console.log('user', user);
+  console.log('comment', comment);
   try {
     const response = await Product.findByIdAndUpdate(productId, {
-      $push: { reviews: { user, comment, rating }}
+      $push: { reviews: { user, comment }}
     });
 
-    res.status(200).json(response);
+    res.status(200).json(`review with id ${req.params.id} was added`);
+    return;
 
   } catch(e) {
     res.status(500).json(`Error occurred ${e}`);
   }
 });
+
 
 module.exports = router;

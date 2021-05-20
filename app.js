@@ -28,7 +28,7 @@ const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.
 
 const app = express();
 
-//allows heroku to received connections from other websites
+
 
 // Middleware Setup
 app.use(logger('dev'));
@@ -37,6 +37,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 
+//allows heroku to received connections from other websites
 app.set('trust proxy', 1);
 
 //Session setup
@@ -45,9 +46,9 @@ app.use(session({
   saveUninitialized: true,
   resave: false,
   cookie: {
-    sameSite: 'none', // true, //the client is on the same domain as the server
-    secure: true, // false,
-    httpOnly: false, // true,
+    sameSite: 'none',
+    secure: true,
+    httpOnly: false,
     maxAge: 600000 //expiration time 1 hour
   },
   rolling: true
