@@ -19,8 +19,7 @@ router.post('/favourites/:id', async (req, res) => {
 router.get('/favourites', async (req, res)=> {
 
   try {
-
-    const favourites = await Favourite.find({user: req.user}).populate('product');
+    const favourites = await Favourite.findOne({user: req.user}).populate('product');
 
     res.status(200).json(favourites);
 
@@ -47,7 +46,6 @@ router.post('/products/:id/favourites', async (req, res)=> {
         user: user._id
       });
     }
-
     else {
       response = await Favourite.findByIdAndUpdate(foundWishList._id, {
         $push: {
@@ -55,6 +53,7 @@ router.post('/products/:id/favourites', async (req, res)=> {
         }
       })
     }
+
     res.status(200).json(response);
 
   } catch(e) {
@@ -63,6 +62,4 @@ router.post('/products/:id/favourites', async (req, res)=> {
   });
 
   
-
-
 module.exports = router;

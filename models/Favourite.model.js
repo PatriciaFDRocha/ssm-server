@@ -2,10 +2,10 @@ const mongoose          = require('mongoose');
 const { Schema, model } = mongoose;
 
 const favouriteSchema = new Schema({
-  product: {
+  product: [{
     type: Schema.Types.ObjectId,
     ref: 'Product'
-  },
+  }],
   
   user: {
     type: Schema.Types.ObjectId,
