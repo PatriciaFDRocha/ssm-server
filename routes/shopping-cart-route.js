@@ -19,14 +19,21 @@ router.get('/shopping-cart', async (req, res) => {
 
 //Add Product to Shopping Cart
 router.post('/shopping-cart', async (req, res) => {
-  const { quantity, productId } = req.body;
+
+  const { productId, quantity } = req.body;
   const user = req.user;
+  console.log('productid', productId)
 
   try {
     const product = await Product.findById(productId);
 
     const foundCart = await ShoppingCart.findOne({user: user});
     let response;
+
+    console.log(product);//null
+    console.log(foundCart);
+    console.log(user);
+
 
 
   if(!foundCart) {
@@ -38,8 +45,8 @@ router.post('/shopping-cart', async (req, res) => {
       }]
     });
 
-
-  } else {
+  }  
+  else {
     let productsIdsArr = foundCart.products.map(product => product.product);
 
     if(productsIdsArr.includes(productId)) {
